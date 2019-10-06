@@ -67,6 +67,7 @@ class Mojito(LimeTextExplainer):
 
         instances_str = self.pair_of_tuples_to_str(instances)
         for i, instance_str in enumerate(instances_str):
+            print ("Explaining {}/{}".format(i, len(instances_str)))
 
             explanation = explain_instance_fn(instance_str,
                                               wrapper_classifier,

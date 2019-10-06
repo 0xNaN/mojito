@@ -35,16 +35,18 @@ class Mojito(LimeTextExplainer):
         self.__init_schema()
 
     def copy(self, wrapper_classifier, instances, num_features, num_perturbation, distance_metric='cosine'):
+        _wrapper_classifier = lambda strings: wrapper_classifier(self.str_to_pair_of_tuples(strings))
         return self.__explain_group(self.explain_instance_copy,
-                                    wrapper_classifier,
+                                    _wrapper_classifier,
                                     instances,
                                     num_features,
                                     num_perturbation,
                                     distance_metric)
 
     def drop(self, wrapper_classifier, instances, num_features, num_perturbation, distance_metric='cosine'):
+        _wrapper_classifier = lambda strings: wrapper_classifier(self.str_to_pair_of_tuples(strings))
         return self.__explain_group(self.explain_instance_drop,
-                                    wrapper_classifier,
+                                    _wrapper_classifier,
                                     instances,
                                     num_features,
                                     num_perturbation,
@@ -179,7 +181,7 @@ class Mojito(LimeTextExplainer):
             inverse_data.append(sample_for_classifier)
 
         # call the classifier & compute distances
-        labels = classifier_fn(self.str_to_pair_of_tuples(inverse_data))
+        labels = classifier_fn(inverse_data)
         distances = distance_fn(sp.sparse.csr_matrix(data))
         return data, labels, distances
 

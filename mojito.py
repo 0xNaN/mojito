@@ -179,7 +179,7 @@ class Mojito(LimeTextExplainer):
             inverse_data.append(sample_for_classifier)
 
         # call the classifier & compute distances
-        labels = classifier_fn(inverse_data)
+        labels = classifier_fn(self.str_to_pair_of_tuples(inverse_data))
         distances = distance_fn(sp.sparse.csr_matrix(data))
         return data, labels, distances
 

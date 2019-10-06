@@ -4,8 +4,9 @@ import pandas as pd
 import scipy as sp
 import numpy as np
 from sklearn.metrics.pairwise import pairwise_distances
+from collections import defaultdict
 
-from lime.lime_text import LimeTextExplainer
+from lime.lime_text import LimeTextExplainer, IndexedString
 
 
 class Mojito(LimeTextExplainer):
@@ -114,6 +115,21 @@ class Mojito(LimeTextExplainer):
             pairs_strings.append(" ".join(this_pair_str))
 
         return pairs_strings
+
+    def str_to_pair_of_tuples(self, strs):
+        dataframe = pd.DataFrame(columns = self.columns)
+        for row in strs:
+            this_pair_row = defaultdict(str)
+            row = IndexedString(row, split_expression = " ")
+            for attr_index in self.schema.keys():
+                left_tokens  = self.__indexes_of_attr(row, self.__make_attr(attr_index, tuple = "left"))
+                right_tokens = self.__indexes_of_attr(row, self.__make_attr(attr_index, tuple = "right"))
+
+                this_pair_row[self.lprefix + self.schema[attr_index]] = " ".join([self.__split_attr(row.word(t))[2] for t in left_tokens])
+                this_pair_row[self.rprefix + self.schema[attr_index]] = " ".join([self.__split_attr(row.word(t))[2] for t in right_tokens])
+
+            dataframe = dataframe.append(this_pair_row, ignore_index = True)
+        return dataframe
 
     def __data_labels_distances_copy(self,
                                      indexed_string,
